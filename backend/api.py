@@ -11,10 +11,18 @@ obs = simpleobsws.obsws(host='localhost', port=4444, password=None, loop=loop)
 API_URL = 'http://127.0.0.1:5000/api/'
 
 async def make_request(call, data=None):
+    try:
+        destination = data['ref']
+    except KeyError:
+        destination = None
     await obs.connect()
     result = await obs.call(call, data=data)
     await obs.disconnect()
-    return result
+    if destination:
+        return redirect(destination)
+    else:
+        result["api_warning"] = "All API calls must contain a valid refferal."
+        return result
 
 def options_to_GET(options_list):
     output = ""
@@ -41,16 +49,22 @@ def api_call():
     # "volume=-19.3:float" or "source=Desktop Audio:str"
     data={}
     for key, value in request.values.items():
-        if key != "call":
-            splitvalue = value.split(":")
-            if splitvalue[1] == "bool":
-                data[key] = str_to_bool(splitvalue[0])
-            elif splitvalue[1] == "int":
-                data[key] = int(splitvalue[0])
-            elif splitvalue[1] == "float":
-                data[key] = float(splitvalue[0])
-            else:
-                data[key] = splitvalue[0]
+        if key not in {"call"}:
+            try:
+                if key not in {"ref"}:
+                    splitvalue = value.split(":")
+                    if splitvalue[1] == "bool":
+                        data[key] = str_to_bool(splitvalue[0])
+                    elif splitvalue[1] == "int":
+                        data[key] = int(splitvalue[0])
+                    elif splitvalue[1] == "float":
+                        data[key] = float(splitvalue[0])
+                    else:
+                        data[key] = splitvalue[0]
+                else:
+                    data[key] = value
+            except IndexError:
+                data[key] = value
     if len(data.values()) == 0:
         return loop.run_until_complete(make_request(request.values["call"]))
     else:
