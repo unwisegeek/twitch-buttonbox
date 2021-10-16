@@ -1,4 +1,5 @@
 from flask import Flask, redirect, request
+import paho.mqtt.publish as publish
 import simpleobsws
 import asyncio
 import requests
@@ -8,7 +9,11 @@ app = Flask(__name__)
 loop = asyncio.get_event_loop()
 obs = simpleobsws.obsws(host='localhost', port=4444, password=None, loop=loop)
 
-API_URL = 'http://127.0.0.1:5000/api/'
+API_URL = ''
+MQTT_HOST = ''
+MQTT_PORT = ''
+MQTT_AUTH = {'username':'','password':''}
+
 
 async def make_request(call, data=None):
     try:
@@ -69,6 +74,59 @@ def api_call():
         return loop.run_until_complete(make_request(request.values["call"]))
     else:
         return loop.run_until_complete(make_request(request.values["call"], data=data))
+
+@app.route('/api/sound')
+def play_sound():
+    has_name = False
+    has_ref = False
+    data = {}
+    for key, value in requests.values.items():
+        if key == "name":
+            has_name = True
+        if key == "ref":
+            has_ref = True
+        data[key] = value
+    
+    if has_name and has_ref:
+        publish.single(
+            'buttonbox', 
+            {'snd':requests.values["name"]}, 
+            qos=0, 
+            retain=False, 
+            hostname=MQTT_HOST,
+            port=MQTT_PORT, 
+            client_id="", 
+            keepalive=60,
+            will=None,
+            auth=MQTT_AUTH,
+            tls=None,
+            protocol=mqtt.MQTTv311,
+            transport="tcp",
+            )
+    elif has_name and not has_ref:
+        publish.single(
+                'buttonbox', 
+                {'snd':requests.values["name"]}, 
+                qos=0, 
+                retain=False, 
+                hostname=MQTT_HOST,
+                port=MQTT_PORT, 
+                client_id="", 
+                keepalive=60,
+                will=None,
+                auth=MQTT_AUTH,
+                tls=None,
+                protocol=mqtt.MQTTv311,
+                transport="tcp",
+                )
+        result["api_error"] = "All API calls must contain a valid refferal."
+        return result
+    elif not has_name:
+        result["api_error"] = "Sound API calls must have a sound name."
+        return result
+    else:
+        result["api_error"] = "None of this working!"
+        return result
 
 @app.route('/api/test-volume')
 def test_volume():
