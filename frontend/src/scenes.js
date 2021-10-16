@@ -17,7 +17,7 @@ const rows = [
     createButtonData('Left Monitor w/ Lower-Left Camera', '/api/?call=SetCurrentScene&scene-name=Left Monitor w%2F Lower-Left Camera'),
     createButtonData('Left Monitor w/ Lower-Right Camera', '/api/?call=SetCurrentScene&scene-name=Left Monitor w%2F Lower-Right Camera'),
     createButtonData('Outro', '/api/?call=SetCurrentScene&scene-name=Outro'),
-    createButtonData('horn', '/api/sounds?name=horn')
+    createButtonData('horn', '/api/sound?name=horn')
 ]
 
 const Item = styled(Paper)(({ theme }) => ({
