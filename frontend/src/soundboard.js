@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 
 var referrer = window.location.href;
-var api = 'http://localhost:5000';
+var api = 'http://10.10.2.101:5000';
 
 function createButtonData(label, link) {
   return { label, link };
