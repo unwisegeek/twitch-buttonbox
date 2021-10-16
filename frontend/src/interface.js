@@ -7,6 +7,7 @@ import Tabs from '@mui/material/Tabs'
 import PropTypes from 'prop-types'
 import SwipeableViews from 'react-swipeable-views';
 import ScenesInterface from './scenes.js'
+import SoundsInterface from './soundboard.js';
 import Link from '@mui/material/Link'
 
 
@@ -45,7 +46,7 @@ function ItsATabPanel() {
             <ScenesInterface />
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>     
-            <ScenesInterface />
+            <SoundsInterface />
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>       
         </TabPanel>
