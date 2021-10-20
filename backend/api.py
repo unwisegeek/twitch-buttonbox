@@ -12,9 +12,8 @@ from config import (
     MQTT_PORT,
     MQTT_AUTH,
     OBS_HOST,
-    OBS_PASSWORD,
     OBS_PORT,
-    OBS_AUTH,
+    OBS_PASSWORD,
     )
 
 app = Flask(__name__)
