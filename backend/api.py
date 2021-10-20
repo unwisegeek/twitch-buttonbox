@@ -1,19 +1,26 @@
 from flask import Flask, redirect, request
+import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 import simpleobsws
 import asyncio
 import requests
+import json
+from config import (
+    API_URL,
+    API_PORT,
+    MQTT_HOST,
+    MQTT_PORT,
+    MQTT_AUTH,
+    OBS_HOST,
+    OBS_PASSWORD,
+    OBS_PORT,
+    OBS_AUTH,
+    )
 
 app = Flask(__name__)
-
 loop = asyncio.get_event_loop()
-obs = simpleobsws.obsws(host='localhost', port=4444, password=None, loop=loop)
 
-API_URL = ''
-MQTT_HOST = ''
-MQTT_PORT = ''
-MQTT_AUTH = {'username':'','password':''}
-
+obs = simpleobsws.obsws(host=OBS_HOST, port=OBS_PORT, password=OBS_PASSWORD, loop=loop)
 
 async def make_request(call, data=None):
     try:
@@ -79,8 +86,8 @@ def api_call():
 def play_sound():
     has_name = False
     has_ref = False
-    data = {}
-    for key, value in requests.values.items():
+    data, result = {}, {}
+    for key, value in request.values.items():
         if key == "name":
             has_name = True
         if key == "ref":
@@ -88,9 +95,11 @@ def play_sound():
         data[key] = value
     
     if has_name and has_ref:
+        data['snd'] = request.values["name"]
+        msg = json.dumps(data)
         publish.single(
             'buttonbox', 
-            {'snd':requests.values["name"]}, 
+            str(msg), 
             qos=0, 
             retain=False, 
             hostname=MQTT_HOST,
@@ -103,10 +112,13 @@ def play_sound():
             protocol=mqtt.MQTTv311,
             transport="tcp",
             )
+        return redirect(data['ref'])
     elif has_name and not has_ref:
+        data['snd'] = request.values["name"]
+        msg = json.dumps(data)
         publish.single(
                 'buttonbox', 
-                {'snd':requests.values["name"]}, 
+                str(msg), 
                 qos=0, 
                 retain=False, 
                 hostname=MQTT_HOST,
