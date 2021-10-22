@@ -7,6 +7,7 @@ import Link from '@mui/material/Link'
 
 const config = require('./config.js');
 
+
 var referrer = window.location.href;
 var api = `http://${config["api_host"]}:${config["api_port"]}`;
 
@@ -19,7 +20,6 @@ const rows = [
     createButtonData('Left Monitor w/ Lower-Left Camera', '/api/?call=SetCurrentScene&scene-name=Left Monitor w%2F Lower-Left Camera'),
     createButtonData('Left Monitor w/ Lower-Right Camera', '/api/?call=SetCurrentScene&scene-name=Left Monitor w%2F Lower-Right Camera'),
     createButtonData('Outro', '/api/?call=SetCurrentScene&scene-name=Outro'),
-    createButtonData('horn', '/api/sound?name=horn')
 ]
 
 const Item = styled(Paper)(({ theme }) => ({

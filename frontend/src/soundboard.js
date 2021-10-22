@@ -5,15 +5,18 @@ import { styled } from '@mui/material/styles'
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 
+const config = require('./config.js');
+
+
 var referrer = window.location.href;
-var api = 'http://10.10.2.101:5000';
+var api = `http://${config["api_host"]}:${config["api_port"]}`;
 
 function createButtonData(label, link) {
   return { label, link };
 }
 
 const rows = [
-    createButtonData('Honk', '/api/sound?name=honk'),
+    createButtonData('horn', '/api/sound?name=horn')
 ]
 
 const Item = styled(Paper)(({ theme }) => ({
